@@ -36,7 +36,7 @@ app.post('/ask', (req, res) => {
 
   // コマンドラインで実行するコマンドを組み立てる
   // 注意：実際のパスに合わせて /Users/sayami/ask_gemini.sh の部分を修正してください
-  const command = `/Users/sayami/ask_gemini.sh "${fullQuestion.replace(/
+  const command = `/Users/sayami/ask_gemini.sh "${fullQuestion.replace(/"/g, '"')}" "${apiKey}"`;
 
 // サーバーを起動
 app.listen(port, () => {
