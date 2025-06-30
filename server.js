@@ -38,7 +38,26 @@ app.post('/ask', (req, res) => {
   // 注意：実際のパスに合わせて /Users/sayami/ask_gemini.sh の部分を修正してください
   const command = `/Users/sayami/ask_gemini.sh "${fullQuestion.replace(/"/g, '"')}" "${apiKey}"`;
 
-// サーバーを起動
-app.listen(port, () => {
-  console.log(`サーバーが http://localhost:${port} で起動しました`);
+// コマンドを実行
+  exec(command, (error, stdout, stderr) => {
+    if (error) {
+      console.error(`実行エラー: ${error}`);
+      return res.status(500).json({ error: 'スクリプトの実行に失敗しました。' });
+    }
+    if (stderr) {
+      console.error(`標準エラー: ${stderr}`);
+    }
+
+    try {
+      // Gemini APIからのJSON応答をパースする
+      const jsonResponse = JSON.parse(stdout);
+      // 回答部分のテキストを抽出する
+      const answer = jsonResponse.candidates[0].content.parts[0].text;
+      // 抽出したテキストをブラウザに送る
+      res.json({ answer: answer });
+    } catch (e) {
+      console.error('JSONのパースに失敗しました:', e);
+      res.status(500).json({ error: 'APIからの応答の解析に失敗しました。' });
+    }
+  });
 });
