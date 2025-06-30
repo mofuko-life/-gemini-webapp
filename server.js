@@ -22,39 +22,21 @@ app.use(express.static('public'));
 
 // '/ask' というURLへのPOSTリクエストを処理する部分
 app.post('/ask', (req, res) => {
-  // リクエストから質問テキストを取得
-  const question = req.body.question;
-  if (!question) {
+  // リクエストからユーザーの質問テキストを取得
+  const userQuestion = req.body.question;
+  if (!userQuestion) {
     return res.status(400).json({ error: '質問が空です。' });
   }
 
+  // 犬の行動心理学に特化させるための指示
+  const systemInstruction = "あなたは犬の行動心理学の専門家です。犬の行動や訓練に関する質問に、行動心理学の観点から、その行動の理由や背景を解説し、科学的根拠に基づいた具体的なしつけ方を、分かりやすく具体的に答えてください。";
+
+  // Geminiに送る最終的な質問を組み立てる
+  const fullQuestion = `${systemInstruction} ${userQuestion}`;
+
   // コマンドラインで実行するコマンドを組み立てる
   // 注意：実際のパスに合わせて /Users/sayami/ask_gemini.sh の部分を修正してください
-  const command = `/Users/sayami/ask_gemini.sh "${question.replace(/"/g, '"')}" "${apiKey}"`;
-
-  // コマンドを実行
-  exec(command, (error, stdout, stderr) => {
-    if (error) {
-      console.error(`実行エラー: ${error}`);
-      return res.status(500).json({ error: 'スクリプトの実行に失敗しました。' });
-    }
-    if (stderr) {
-      console.error(`標準エラー: ${stderr}`);
-    }
-
-    try {
-      // Gemini APIからのJSON応答をパースする
-      const jsonResponse = JSON.parse(stdout);
-      // 回答部分のテキストを抽出する
-      const answer = jsonResponse.candidates[0].content.parts[0].text;
-      // 抽出したテキストをブラウザに送る
-      res.json({ answer: answer });
-    } catch (e) {
-      console.error('JSONのパースに失敗しました:', e);
-      res.status(500).json({ error: 'APIからの応答の解析に失敗しました。' });
-    }
-  });
-});
+  const command = `/Users/sayami/ask_gemini.sh "${fullQuestion.replace(/
 
 // サーバーを起動
 app.listen(port, () => {
