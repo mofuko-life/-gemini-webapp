@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini チャット</title>
+  <style>
+    body { font-family: sans-serif; max-width: 600px; margin: 2em auto; }
+    textarea { width: 100%; height: 80px; }
+    #response { white-space: pre-wrap; background-color: #f4f4f4; padding: 1em; border-radius: 5px; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <h1>Geminiに質問する</h1>
+  <form id="chat-form">
+    <textarea id="question-input" placeholder="ここに質問を入力してください..." required></textarea>
+    <button type="submit">送信</button>
+  </form>
+  <h2>回答:</h2>
+  <div id="response">...</div>
+
+  <script src="script.js"></script>
+</body>
+</html>
